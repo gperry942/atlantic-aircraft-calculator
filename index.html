@@ -1331,6 +1331,16 @@ a, button, input, select {
   color: var(--color-success);
 }
 
+.projection-table .proj-income {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.projection-table .proj-net {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
 /* ============================================
    FEATURE 5: Aircraft Comparison
    ============================================ */
@@ -1996,7 +2006,7 @@ a, button, input, select {
           <!-- ===== FEATURE 4: 5-Year Ownership Projection ===== -->
           <div class="chart-card" id="projectionSection">
             <h3 class="chart-title">5-Year Ownership Projection</h3>
-            <p class="chart-subtitle">Maintenance escalates 3% per year. Depreciation compounds annually.</p>
+            <p class="chart-subtitle" id="projSubtitle">Maintenance escalates 3% per year. Depreciation compounds annually.</p>
             <div class="table-scroll">
               <table class="projection-table" id="projectionTable">
                 <thead>
@@ -2006,6 +2016,8 @@ a, button, input, select {
                     <th>Depreciation</th>
                     <th class="finance-col" id="projFinanceHeader" style="display:none;">Finance</th>
                     <th>Total Annual</th>
+                    <th class="income-col" id="projIncomeHeader" style="display:none;">Income</th>
+                    <th class="income-col" id="projNetHeader" style="display:none;">Net Cost</th>
                     <th>Aircraft Value</th>
                     <th>Cumulative</th>
                   </tr>
@@ -2799,6 +2811,8 @@ const els = {
   // Feature 4: Projection
   projectionTableBody: document.getElementById('projectionTableBody'),
   projFinanceHeader: document.getElementById('projFinanceHeader'),
+  projIncomeHeader: document.getElementById('projIncomeHeader'),
+  projNetHeader: document.getElementById('projNetHeader'),
   // Feature 5: Compare
   tabAnalysis: document.getElementById('tabAnalysis'),
   tabCompare: document.getElementById('tabCompare'),
@@ -3144,6 +3158,14 @@ function calculate() {
   renderProjectionTable(projRows, financeEnabled);
   updateProjectionChart(projRows);
 
+  // Update projection subtitle
+  const projSub = document.getElementById('projSubtitle');
+  if (projSub) {
+    projSub.textContent = els.incomeToggle.checked
+      ? 'Maintenance escalates 3% per year. Depreciation compounds annually. Winglets income offset applied.'
+      : 'Maintenance escalates 3% per year. Depreciation compounds annually.';
+  }
+
   // Charts
   updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingAnnual);
 
@@ -3195,20 +3217,27 @@ function calculateShared(trueTotal, hours) {
 // Feature 4: 5-Year Projection Table & Chart
 // ========================================
 function renderProjectionTable(rows, financeEnabled) {
-  const finCol = els.projFinanceHeader;
-  finCol.style.display = financeEnabled ? '' : 'none';
+  const hasIncome = rows[0].netCost !== null;
 
-  els.projectionTableBody.innerHTML = rows.map(row => `
+  els.projFinanceHeader.style.display = financeEnabled ? '' : 'none';
+  els.projIncomeHeader.style.display = hasIncome ? '' : 'none';
+  els.projNetHeader.style.display = hasIncome ? '' : 'none';
+
+  els.projectionTableBody.innerHTML = rows.map(row => {
+    const incomeAnnual = hasIncome ? row.total - row.netCost : 0;
+    return `
     <tr>
       <td>Year ${row.year}</td>
       <td>${formatGBP(row.operating)}</td>
       <td>${formatGBP(row.depreciation)}</td>
       ${financeEnabled ? `<td>${formatGBP(row.finance)}</td>` : ''}
       <td class="proj-total">${formatGBP(row.total)}</td>
+      ${hasIncome ? `<td class="proj-income">-${formatGBP(incomeAnnual)}</td>` : ''}
+      ${hasIncome ? `<td class="proj-net">${formatGBP(row.netCost)}</td>` : ''}
       <td class="proj-value">${formatGBP(row.value)}</td>
       <td class="proj-cumulative">${formatGBP(row.cumulative)}</td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 function updateProjectionChart(rows) {
