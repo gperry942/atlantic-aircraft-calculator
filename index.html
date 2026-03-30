@@ -772,6 +772,46 @@ a, button, input, select {
   gap: var(--space-6);
 }
 
+/* === Results Tabs (Feature 5) === */
+.results-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+}
+
+.results-tab {
+  flex: 1;
+  padding: var(--space-2) var(--space-4);
+  border-radius: calc(var(--radius-lg) - 2px);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  transition: all var(--transition);
+  border: none;
+  background: transparent;
+}
+
+.results-tab.active {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.results-tab:not(.active):hover {
+  color: var(--color-text);
+}
+
+/* Analysis view — flex container */
+#analysisView {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
 /* === KPI Cards === */
 .kpi-grid {
   display: grid;
@@ -865,6 +905,11 @@ a, button, input, select {
   overflow-x: auto;
 }
 
+.table-scroll {
+  overflow-x: auto;
+  margin-top: var(--space-4);
+}
+
 .cost-table {
   border-collapse: collapse;
   width: 100%;
@@ -880,6 +925,7 @@ a, button, input, select {
   color: var(--color-text-muted);
   padding: var(--space-2) var(--space-3);
   border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
 }
 
 .cost-table th:nth-child(2),
@@ -921,6 +967,483 @@ a, button, input, select {
   margin-top: var(--space-8);
 }
 
+/* ============================================
+   FEATURE 1: Purchase Price & Depreciation
+   ============================================ */
+.purchase-section {
+  margin-bottom: var(--space-4);
+}
+
+.price-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.price-prefix {
+  position: absolute;
+  left: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.price-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-6);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--text-base);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  -moz-appearance: textfield;
+}
+
+.price-input::-webkit-inner-spin-button,
+.price-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-input:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,196,0.12);
+}
+
+.dep-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-accent-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent);
+  margin-bottom: var(--space-4);
+}
+
+.dep-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  text-align: center;
+}
+
+.dep-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dep-stat-value {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* === True Annual Cost Banner === */
+.true-cost-banner {
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.true-cost-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.true-cost-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.true-cost-finance-col {
+  display: contents;
+}
+
+.true-cost-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.true-cost-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.true-cost-result .true-cost-value {
+  font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+.true-cost-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.true-cost-plus,
+.true-cost-equals {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   FEATURE 2: Finance Calculator
+   ============================================ */
+.finance-section {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+.finance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.finance-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.finance-label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.finance-sublabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.finance-body {
+  display: none;
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.finance-body.active {
+  display: block;
+}
+
+.balloon-note {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  font-style: italic;
+  margin-top: calc(var(--space-1) * -1);
+}
+
+.finance-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-top: var(--space-2);
+}
+
+.finance-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.finance-stat-primary {
+  grid-column: 1 / -1;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.finance-stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.finance-stat-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.finance-stat-primary .finance-stat-value {
+  font-size: var(--text-xl);
+}
+
+.finance-stat-warn {
+  color: var(--color-warning);
+}
+
+/* ============================================
+   FEATURE 3: Shared Ownership
+   ============================================ */
+.shared-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.shared-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shared-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.shared-title {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.shared-subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.shared-body {
+  display: none;
+}
+
+.shared-body.active {
+  display: block;
+}
+
+.shared-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.shared-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.shared-card-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.shared-card-value {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   FEATURE 4: 5-Year Projection
+   ============================================ */
+.projection-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  min-width: 560px;
+}
+
+.projection-table th {
+  text-align: right;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.projection-table th:first-child {
+  text-align: left;
+}
+
+.projection-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-divider);
+  font-size: var(--text-sm);
+  text-align: right;
+}
+
+.projection-table td:first-child {
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.projection-table .proj-total {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.projection-table .proj-cumulative {
+  color: var(--color-text-muted);
+}
+
+.projection-table .proj-value {
+  color: var(--color-success);
+}
+
+/* ============================================
+   FEATURE 5: Aircraft Comparison
+   ============================================ */
+#compareView {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.compare-selectors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .compare-selectors {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compare-selector-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.compare-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-faint);
+  font-size: var(--text-xs);
+}
+
+.compare-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+}
+
+.compare-select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,196,0.12);
+}
+
+.compare-table {
+  min-width: 480px;
+}
+
+.compare-table th {
+  text-align: center;
+  background: var(--color-surface-2);
+  white-space: nowrap;
+}
+
+.compare-table th:first-child {
+  text-align: left;
+  background: transparent;
+}
+
+.compare-table td:first-child {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.compare-table td:not(:first-child) {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.winner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-success);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+
+.compare-aircraft-header {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+}
+
+.compare-aircraft-type {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
 /* === Mobile responsive === */
 @media (max-width: 768px) {
   .main {
@@ -951,6 +1474,22 @@ a, button, input, select {
 
   .btn span.btn-text {
     display: none;
+  }
+
+  .dep-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .shared-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .true-cost-inner {
+    gap: var(--space-2);
+  }
+
+  .finance-summary {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1047,6 +1586,127 @@ a, button, input, select {
           </div>
           <input type="range" id="burnSlider" min="10" max="120" step="1" value="30" class="slider">
           <div class="slider-labels"><span>10 lph</span><span>120 lph</span></div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- ===== FEATURE 1: Purchase Price & Depreciation ===== -->
+        <h2 class="section-label">Purchase &amp; Depreciation</h2>
+        <div class="purchase-section">
+          <!-- Purchase Price -->
+          <div class="control-group">
+            <div class="control-header">
+              <label for="purchasePriceInput">Purchase Price</label>
+              <span class="control-value" id="purchasePriceDisplay">£85,000</span>
+            </div>
+            <div class="price-input-wrapper">
+              <span class="price-prefix">£</span>
+              <input type="number" id="purchasePriceInput" value="85000" min="5000" max="2000000" step="1000" class="price-input">
+            </div>
+          </div>
+
+          <!-- Depreciation Rate -->
+          <div class="control-group">
+            <div class="control-header">
+              <label for="depRateSlider">Annual Depreciation Rate</label>
+              <span class="control-value" id="depRateValue">5%</span>
+            </div>
+            <input type="range" id="depRateSlider" min="0" max="15" step="0.5" value="5" class="slider">
+            <div class="slider-labels"><span>0%</span><span>15%</span></div>
+          </div>
+
+          <!-- Depreciation summary -->
+          <div class="dep-summary">
+            <div class="dep-stat">
+              <span class="dep-stat-label">Annual Depreciation</span>
+              <span class="dep-stat-value" id="annualDepAmount">£4,250</span>
+            </div>
+            <div class="dep-stat">
+              <span class="dep-stat-label">Value After Year 1</span>
+              <span class="dep-stat-value" id="valueAfterYear1">£80,750</span>
+            </div>
+            <div class="dep-stat">
+              <span class="dep-stat-label">Value After Year 5</span>
+              <span class="dep-stat-value" id="valueAfterYear5">£66,342</span>
+            </div>
+          </div>
+
+          <!-- ===== FEATURE 2: Finance Calculator ===== -->
+          <div class="finance-section">
+            <div class="finance-header">
+              <div class="finance-header-left">
+                <span class="finance-label">Finance this aircraft</span>
+                <span class="finance-sublabel">Buckley Aircraft Finance terms</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="financeToggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <div class="finance-body" id="financeBody">
+              <!-- Deposit -->
+              <div class="control-group">
+                <div class="control-header">
+                  <label for="depositSlider">Deposit</label>
+                  <span class="control-value" id="depositValue">20% · £17,000</span>
+                </div>
+                <input type="range" id="depositSlider" min="10" max="50" step="1" value="20" class="slider">
+                <div class="slider-labels"><span>10%</span><span>50%</span></div>
+              </div>
+
+              <!-- Term -->
+              <div class="control-group">
+                <div class="control-header">
+                  <label for="termSlider">Loan Term</label>
+                  <span class="control-value" id="termValue">60 months</span>
+                </div>
+                <input type="range" id="termSlider" min="18" max="84" step="6" value="60" class="slider">
+                <div class="slider-labels"><span>18 mo</span><span>84 mo</span></div>
+              </div>
+
+              <!-- APR -->
+              <div class="control-group">
+                <div class="control-header">
+                  <label for="aprSlider">Interest Rate (APR)</label>
+                  <span class="control-value" id="aprValue">8.9%</span>
+                </div>
+                <input type="range" id="aprSlider" min="5" max="15" step="0.1" value="8.9" class="slider">
+                <div class="slider-labels"><span>5%</span><span>15%</span></div>
+              </div>
+
+              <!-- Balloon -->
+              <div class="control-group">
+                <div class="control-header">
+                  <label for="balloonSlider">Balloon Payment</label>
+                  <span class="control-value" id="balloonValue">0%</span>
+                </div>
+                <input type="range" id="balloonSlider" min="0" max="50" step="5" value="0" class="slider">
+                <div class="slider-labels"><span>0%</span><span>50%</span></div>
+                <p class="balloon-note">Set balloon to defer capital to end of term</p>
+              </div>
+
+              <!-- Finance summary -->
+              <div class="finance-summary">
+                <div class="finance-stat finance-stat-primary">
+                  <span class="finance-stat-label">Monthly Payment</span>
+                  <span class="finance-stat-value" id="monthlyPayment">£0</span>
+                </div>
+                <div class="finance-stat">
+                  <span class="finance-stat-label">Total Interest</span>
+                  <span class="finance-stat-value finance-stat-warn" id="totalInterest">£0</span>
+                </div>
+                <div class="finance-stat">
+                  <span class="finance-stat-label">Total Payable</span>
+                  <span class="finance-stat-value" id="totalPayable">£0</span>
+                </div>
+                <div class="finance-stat" id="balloonStatDisplay" style="display:none;">
+                  <span class="finance-stat-label">Balloon Due</span>
+                  <span class="finance-stat-value finance-stat-warn" id="balloonAmount">£0</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <hr class="divider">
@@ -1208,91 +1868,241 @@ a, button, input, select {
 
       <!-- Right: Results -->
       <section class="results-panel">
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-          <div class="kpi-card kpi-primary">
-            <span class="kpi-label">Total Annual Cost</span>
-            <span class="kpi-value" id="totalCost">£0</span>
-            <span class="kpi-sub" id="totalMonthly">£0 / month</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Cost Per Hour</span>
-            <span class="kpi-value" id="costPerHour">£0</span>
-            <span class="kpi-sub" id="costPerHourSub">All-in hourly rate</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Annual Fuel Cost</span>
-            <span class="kpi-value" id="fuelCost">£0</span>
-            <span class="kpi-sub" id="fuelPercent">0% of total</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Fixed Costs</span>
-            <span class="kpi-value" id="fixedCost">£0</span>
-            <span class="kpi-sub" id="fixedPercent">0% of total</span>
-          </div>
+
+        <!-- ===== FEATURE 5: Tab bar for Analysis / Compare ===== -->
+        <div class="results-tabs">
+          <button class="results-tab active" id="tabAnalysis">Analysis</button>
+          <button class="results-tab" id="tabCompare">Compare Aircraft</button>
         </div>
 
-        <!-- Net Cost Card (shown when income is active) -->
-        <div class="net-cost-banner" id="netCostBanner" style="display:none;">
-          <div class="net-cost-row">
-            <div class="net-cost-item">
-              <span class="net-cost-label">Gross Annual Cost</span>
-              <span class="net-cost-value" id="grossCostDisplay">£0</span>
+        <!-- ===== ANALYSIS VIEW ===== -->
+        <div id="analysisView">
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card kpi-primary">
+              <span class="kpi-label">Total Annual Cost</span>
+              <span class="kpi-value" id="totalCost">£0</span>
+              <span class="kpi-sub" id="totalMonthly">£0 / month</span>
             </div>
-            <div class="net-cost-minus">−</div>
-            <div class="net-cost-item">
-              <span class="net-cost-label">Rental Income</span>
-              <span class="net-cost-value net-cost-income" id="incomeDisplay">£0</span>
+            <div class="kpi-card">
+              <span class="kpi-label">Cost Per Hour</span>
+              <span class="kpi-value" id="costPerHour">£0</span>
+              <span class="kpi-sub" id="costPerHourSub">All-in hourly rate</span>
             </div>
-            <div class="net-cost-equals">=</div>
-            <div class="net-cost-item net-cost-result">
-              <span class="net-cost-label">Net Annual Cost</span>
-              <span class="net-cost-value" id="netCostDisplay">£0</span>
-              <span class="net-cost-sub" id="netMonthlyCost">£0 / month</span>
+            <div class="kpi-card">
+              <span class="kpi-label">Annual Fuel Cost</span>
+              <span class="kpi-value" id="fuelCost">£0</span>
+              <span class="kpi-sub" id="fuelPercent">0% of total</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Fixed Costs</span>
+              <span class="kpi-value" id="fixedCost">£0</span>
+              <span class="kpi-sub" id="fixedPercent">0% of total</span>
             </div>
           </div>
-        </div>
 
-        <!-- Cost Breakdown Chart -->
-        <div class="chart-card">
-          <h3 class="chart-title">Cost Breakdown</h3>
-          <div class="chart-container">
-            <canvas id="breakdownChart"></canvas>
+          <!-- True Annual Cost KPI (Feature 1 — includes depreciation) -->
+          <div class="true-cost-banner" id="trueCostBanner">
+            <div class="true-cost-inner">
+              <div class="true-cost-col">
+                <span class="true-cost-label">Operating Costs</span>
+                <span class="true-cost-value" id="trueCostOperating">£0</span>
+              </div>
+              <div class="true-cost-plus">+</div>
+              <div class="true-cost-col">
+                <span class="true-cost-label">Depreciation</span>
+                <span class="true-cost-value" id="trueCostDep">£0</span>
+              </div>
+              <div id="trueCostFinanceCol" class="true-cost-finance-col" style="display:none;">
+                <div class="true-cost-plus">+</div>
+                <div class="true-cost-col">
+                  <span class="true-cost-label">Finance (annual)</span>
+                  <span class="true-cost-value" id="trueCostFinance">£0</span>
+                </div>
+              </div>
+              <div class="true-cost-equals">=</div>
+              <div class="true-cost-col true-cost-result">
+                <span class="true-cost-label">True Annual Cost</span>
+                <span class="true-cost-value" id="trueCostTotal">£0</span>
+                <span class="true-cost-sub" id="trueCostPerHour">£0 / hr all-in</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Cost vs Hours Chart -->
-        <div class="chart-card">
-          <h3 class="chart-title">Cost Per Hour vs Annual Hours</h3>
-          <p class="chart-subtitle">Shows how cost per hour decreases as you fly more</p>
-          <div class="chart-container">
-            <canvas id="hoursChart"></canvas>
+          <!-- ===== FEATURE 3: Shared Ownership Splitter ===== -->
+          <div class="shared-section">
+            <div class="shared-header">
+              <div class="shared-header-left">
+                <h3 class="shared-title">Shared Ownership</h3>
+                <span class="shared-subtitle">Split costs equally between owners</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="sharedToggle">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="shared-body" id="sharedBody">
+              <div class="control-group" style="margin-top: var(--space-4);">
+                <div class="control-header">
+                  <label for="ownersSlider">Number of Owners</label>
+                  <span class="control-value" id="ownersValue">2</span>
+                </div>
+                <input type="range" id="ownersSlider" min="2" max="4" step="1" value="2" class="slider">
+                <div class="slider-labels"><span>2</span><span>3</span><span>4</span></div>
+              </div>
+              <div class="shared-cards">
+                <div class="shared-card">
+                  <span class="shared-card-label">Your Annual Share</span>
+                  <span class="shared-card-value" id="shareAnnual">£0</span>
+                </div>
+                <div class="shared-card">
+                  <span class="shared-card-label">Your Monthly Share</span>
+                  <span class="shared-card-value" id="shareMonthly">£0</span>
+                </div>
+                <div class="shared-card">
+                  <span class="shared-card-label">Your Cost / Hour</span>
+                  <span class="shared-card-value" id="shareCostPerHour">£0</span>
+                </div>
+                <div class="shared-card">
+                  <span class="shared-card-label">Your Hours / Year</span>
+                  <span class="shared-card-value" id="shareHours">0 hrs</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Cost table -->
-        <div class="table-card">
-          <h3 class="chart-title">Detailed Cost Summary</h3>
-          <table class="cost-table">
-            <thead>
-              <tr>
-                <th>Cost Item</th>
-                <th>Annual Cost</th>
-                <th>% of Total</th>
-              </tr>
-            </thead>
-            <tbody id="costTableBody"></tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td>Total Annual Cost</td>
-                <td id="tableTotal">£0</td>
-                <td>100%</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+          <!-- Net Cost Card (shown when income is active) -->
+          <div class="net-cost-banner" id="netCostBanner" style="display:none;">
+            <div class="net-cost-row">
+              <div class="net-cost-item">
+                <span class="net-cost-label">Gross Annual Cost</span>
+                <span class="net-cost-value" id="grossCostDisplay">£0</span>
+              </div>
+              <div class="net-cost-minus">−</div>
+              <div class="net-cost-item">
+                <span class="net-cost-label">Rental Income</span>
+                <span class="net-cost-value net-cost-income" id="incomeDisplay">£0</span>
+              </div>
+              <div class="net-cost-equals">=</div>
+              <div class="net-cost-item net-cost-result">
+                <span class="net-cost-label">Net Annual Cost</span>
+                <span class="net-cost-value" id="netCostDisplay">£0</span>
+                <span class="net-cost-sub" id="netMonthlyCost">£0 / month</span>
+              </div>
+            </div>
+          </div>
 
-        <p class="disclaimer">Estimates based on typical UK general aviation costs. Actual costs may vary by location, aircraft condition, and operator. All figures in GBP (£). Engine reserve is set aside per flying hour towards future overhaul.</p>
+          <!-- ===== FEATURE 4: 5-Year Ownership Projection ===== -->
+          <div class="chart-card" id="projectionSection">
+            <h3 class="chart-title">5-Year Ownership Projection</h3>
+            <p class="chart-subtitle">Maintenance escalates 3% per year. Depreciation compounds annually.</p>
+            <div class="table-scroll">
+              <table class="projection-table" id="projectionTable">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th>Operating</th>
+                    <th>Depreciation</th>
+                    <th class="finance-col" id="projFinanceHeader" style="display:none;">Finance</th>
+                    <th>Total Annual</th>
+                    <th>Aircraft Value</th>
+                    <th>Cumulative</th>
+                  </tr>
+                </thead>
+                <tbody id="projectionTableBody"></tbody>
+              </table>
+            </div>
+            <div class="chart-container" style="margin-top: var(--space-5); height: 260px;">
+              <canvas id="projectionChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Cost Breakdown Chart -->
+          <div class="chart-card">
+            <h3 class="chart-title">Cost Breakdown</h3>
+            <div class="chart-container">
+              <canvas id="breakdownChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Cost vs Hours Chart -->
+          <div class="chart-card">
+            <h3 class="chart-title">Cost Per Hour vs Annual Hours</h3>
+            <p class="chart-subtitle">Shows how cost per hour decreases as you fly more</p>
+            <div class="chart-container">
+              <canvas id="hoursChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Cost table -->
+          <div class="table-card">
+            <h3 class="chart-title">Detailed Cost Summary</h3>
+            <table class="cost-table">
+              <thead>
+                <tr>
+                  <th>Cost Item</th>
+                  <th>Annual Cost</th>
+                  <th>% of Total</th>
+                </tr>
+              </thead>
+              <tbody id="costTableBody"></tbody>
+              <tfoot>
+                <tr class="total-row">
+                  <td>Total Annual Cost</td>
+                  <td id="tableTotal">£0</td>
+                  <td>100%</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <p class="disclaimer">Estimates based on typical UK general aviation costs. Actual costs may vary by location, aircraft condition, and operator. All figures in GBP (£). Engine reserve is set aside per flying hour towards future overhaul.</p>
+        </div><!-- /analysisView -->
+
+        <!-- ===== FEATURE 5: Compare Aircraft View ===== -->
+        <div id="compareView" style="display:none;">
+          <div class="compare-selectors">
+            <div class="compare-selector-group">
+              <label class="section-label" style="margin-bottom: var(--space-2);">Aircraft A</label>
+              <select class="compare-select" id="compareA">
+                <!-- Options filled by JS -->
+              </select>
+            </div>
+            <div class="compare-selector-group">
+              <label class="section-label" style="margin-bottom: var(--space-2);">Aircraft B</label>
+              <select class="compare-select" id="compareB">
+              </select>
+            </div>
+            <div class="compare-selector-group">
+              <label class="section-label" style="margin-bottom: var(--space-2);">Aircraft C <span class="compare-optional">(optional)</span></label>
+              <select class="compare-select" id="compareC">
+                <option value="-1">— None —</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3 class="chart-title">Annual Cost Comparison</h3>
+            <p class="chart-subtitle">All aircraft at current fuel price and 100 hrs/year</p>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="compareChart"></canvas>
+            </div>
+          </div>
+
+          <div class="table-card" id="compareTableCard">
+            <h3 class="chart-title">Side-by-Side Comparison</h3>
+            <div class="table-scroll">
+              <table class="cost-table compare-table" id="compareTable">
+                <thead id="compareTableHead"></thead>
+                <tbody id="compareTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="disclaimer">Comparison uses typical UK purchase prices and current calculator parameters for fuel/hours. Depreciation and purchase prices are typical market estimates. Actual values vary.</p>
+        </div><!-- /compareView -->
+
       </section>
     </div>
   </main>
@@ -1753,6 +2563,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 // ========================================
 
 // Aircraft presets — typical UK values
+// Extended with purchase prices and depreciation rates (Features 1, 5)
 const aircraftPresets = [
   {
     name: 'Cessna 152',
@@ -1764,7 +2575,9 @@ const aircraftPresets = [
     engineReserve: 12,
     inspection: 800,
     landing: 10,
-    spec: '110 kts · 2 seats · ~23 lph'
+    spec: '110 kts · 2 seats · ~23 lph',
+    purchasePrice: 45000,
+    depRate: 3
   },
   {
     name: 'Cessna 172',
@@ -1776,7 +2589,9 @@ const aircraftPresets = [
     engineReserve: 20,
     inspection: 1200,
     landing: 15,
-    spec: '122 kts · 4 seats · ~32 lph'
+    spec: '122 kts · 4 seats · ~32 lph',
+    purchasePrice: 85000,
+    depRate: 4
   },
   {
     name: 'Piper PA-28',
@@ -1788,7 +2603,9 @@ const aircraftPresets = [
     engineReserve: 18,
     inspection: 1100,
     landing: 15,
-    spec: '125 kts · 4 seats · ~34 lph'
+    spec: '125 kts · 4 seats · ~34 lph',
+    purchasePrice: 65000,
+    depRate: 4
   },
   {
     name: 'Robin DR400',
@@ -1800,7 +2617,9 @@ const aircraftPresets = [
     engineReserve: 16,
     inspection: 1000,
     landing: 12,
-    spec: '140 kts · 4 seats · ~30 lph'
+    spec: '140 kts · 4 seats · ~30 lph',
+    purchasePrice: 70000,
+    depRate: 5
   },
   {
     name: 'Cirrus SR22',
@@ -1812,7 +2631,9 @@ const aircraftPresets = [
     engineReserve: 35,
     inspection: 2000,
     landing: 20,
-    spec: '175 kts · 4 seats · ~56 lph'
+    spec: '175 kts · 4 seats · ~56 lph',
+    purchasePrice: 280000,
+    depRate: 6
   },
   {
     name: 'Diamond DA40',
@@ -1824,7 +2645,9 @@ const aircraftPresets = [
     engineReserve: 22,
     inspection: 1400,
     landing: 15,
-    spec: '145 kts · 4 seats · ~27 lph'
+    spec: '145 kts · 4 seats · ~27 lph',
+    purchasePrice: 160000,
+    depRate: 5
   },
   {
     name: 'Piper Seneca',
@@ -1836,7 +2659,9 @@ const aircraftPresets = [
     engineReserve: 45,
     inspection: 2500,
     landing: 25,
-    spec: '180 kts · 6 seats · ~68 lph'
+    spec: '180 kts · 6 seats · ~68 lph',
+    purchasePrice: 120000,
+    depRate: 5
   },
   {
     name: 'Beech Bonanza',
@@ -1848,7 +2673,9 @@ const aircraftPresets = [
     engineReserve: 30,
     inspection: 1800,
     landing: 18,
-    spec: '170 kts · 4 seats · ~50 lph'
+    spec: '170 kts · 4 seats · ~50 lph',
+    purchasePrice: 150000,
+    depRate: 3
   },
   {
     name: 'Custom',
@@ -1860,7 +2687,9 @@ const aircraftPresets = [
     engineReserve: 20,
     inspection: 1200,
     landing: 15,
-    spec: 'Fully customisable'
+    spec: 'Fully customisable',
+    purchasePrice: 85000,
+    depRate: 5
   }
 ];
 
@@ -1927,13 +2756,69 @@ const els = {
   rentalRateLabel: document.getElementById('rentalRateLabel'),
   fuelDeductStat: document.getElementById('fuelDeductStat'),
   fuelDeduct: document.getElementById('fuelDeduct'),
+  // Feature 1: Purchase & Depreciation
+  purchasePriceInput: document.getElementById('purchasePriceInput'),
+  purchasePriceDisplay: document.getElementById('purchasePriceDisplay'),
+  depRateSlider: document.getElementById('depRateSlider'),
+  depRateValue: document.getElementById('depRateValue'),
+  annualDepAmount: document.getElementById('annualDepAmount'),
+  valueAfterYear1: document.getElementById('valueAfterYear1'),
+  valueAfterYear5: document.getElementById('valueAfterYear5'),
+  trueCostBanner: document.getElementById('trueCostBanner'),
+  trueCostOperating: document.getElementById('trueCostOperating'),
+  trueCostDep: document.getElementById('trueCostDep'),
+  trueCostFinanceCol: document.getElementById('trueCostFinanceCol'),
+  trueCostFinance: document.getElementById('trueCostFinance'),
+  trueCostTotal: document.getElementById('trueCostTotal'),
+  trueCostPerHour: document.getElementById('trueCostPerHour'),
+  // Feature 2: Finance
+  financeToggle: document.getElementById('financeToggle'),
+  financeBody: document.getElementById('financeBody'),
+  depositSlider: document.getElementById('depositSlider'),
+  depositValue: document.getElementById('depositValue'),
+  termSlider: document.getElementById('termSlider'),
+  termValue: document.getElementById('termValue'),
+  aprSlider: document.getElementById('aprSlider'),
+  aprValue: document.getElementById('aprValue'),
+  balloonSlider: document.getElementById('balloonSlider'),
+  balloonValue: document.getElementById('balloonValue'),
+  monthlyPayment: document.getElementById('monthlyPayment'),
+  totalInterest: document.getElementById('totalInterest'),
+  totalPayable: document.getElementById('totalPayable'),
+  balloonStatDisplay: document.getElementById('balloonStatDisplay'),
+  balloonAmount: document.getElementById('balloonAmount'),
+  // Feature 3: Shared Ownership
+  sharedToggle: document.getElementById('sharedToggle'),
+  sharedBody: document.getElementById('sharedBody'),
+  ownersSlider: document.getElementById('ownersSlider'),
+  ownersValue: document.getElementById('ownersValue'),
+  shareAnnual: document.getElementById('shareAnnual'),
+  shareMonthly: document.getElementById('shareMonthly'),
+  shareCostPerHour: document.getElementById('shareCostPerHour'),
+  shareHours: document.getElementById('shareHours'),
+  // Feature 4: Projection
+  projectionTableBody: document.getElementById('projectionTableBody'),
+  projFinanceHeader: document.getElementById('projFinanceHeader'),
+  // Feature 5: Compare
+  tabAnalysis: document.getElementById('tabAnalysis'),
+  tabCompare: document.getElementById('tabCompare'),
+  analysisView: document.getElementById('analysisView'),
+  compareView: document.getElementById('compareView'),
+  compareA: document.getElementById('compareA'),
+  compareB: document.getElementById('compareB'),
+  compareC: document.getElementById('compareC'),
+  compareTableHead: document.getElementById('compareTableHead'),
+  compareTableBody: document.getElementById('compareTableBody'),
 };
 
 let hireType = 'wet'; // 'wet' or 'dry'
 
 let breakdownChart = null;
 let hoursChart = null;
+let projectionChart = null;
+let compareChart = null;
 let selectedAircraft = 1; // Default Cessna 172
+let currentView = 'analysis'; // 'analysis' or 'compare'
 
 // ========================================
 // Theme toggle
@@ -1992,6 +2877,10 @@ function selectAircraft(index) {
   els.inspectionInput.value = a.inspection;
   els.landingInput.value = a.landing;
 
+  // Update purchase price and depreciation
+  els.purchasePriceInput.value = a.purchasePrice;
+  els.depRateSlider.value = a.depRate;
+
   // Re-enable all toggles
   els.insuranceToggle.checked = true;
   els.hangarToggle.checked = true;
@@ -2018,6 +2907,89 @@ function formatGBP(n) {
 
 function formatPercent(n) {
   return Math.round(n) + '%';
+}
+
+// ========================================
+// Finance calculation (Feature 2)
+// Monthly payment with balloon:
+// P = financed amount, B = balloon, r = monthly rate, n = months
+// Monthly = (P - B*(1+r)^-n) * r / (1 - (1+r)^-n)
+// ========================================
+function calcFinance(purchasePrice, depositPct, termMonths, apr, balloonPct) {
+  const deposit = purchasePrice * (depositPct / 100);
+  const financedAmount = purchasePrice - deposit;
+  const balloonAbs = financedAmount * (balloonPct / 100);
+  const r = (apr / 100) / 12; // monthly rate
+  const n = termMonths;
+
+  let monthlyPmt = 0;
+  if (r === 0) {
+    // 0% interest: simple division
+    monthlyPmt = (financedAmount - balloonAbs) / n;
+  } else {
+    // Standard amortization adjusted for balloon
+    const factor = Math.pow(1 + r, n);
+    monthlyPmt = (financedAmount - balloonAbs / factor) * (r * factor) / (factor - 1);
+  }
+
+  const totalPaid = monthlyPmt * n + balloonAbs;
+  const totalInterest = totalPaid - financedAmount;
+
+  return {
+    deposit,
+    financedAmount,
+    balloonAbs,
+    monthlyPmt,
+    totalPaid,
+    totalInterest,
+    annualFinanceCost: monthlyPmt * 12
+  };
+}
+
+// ========================================
+// 5-Year Projection (Feature 4)
+// ========================================
+function calcProjection(baseOperating, purchasePrice, depRate, financeEnabled, annualFinanceCost, baseMaint, incomeEnabled, netAnnualIncome) {
+  const rows = [];
+  let value = purchasePrice;
+  let cumulative = 0;
+
+  for (let yr = 1; yr <= 5; yr++) {
+    // Maintenance escalates 3% per year
+    const maintEscalation = Math.pow(1.03, yr - 1);
+    // Operating = base + escalated maintenance delta
+    const maintBase = baseMaint;
+    const maintEscalated = maintBase * maintEscalation;
+    const maintDelta = maintEscalated - maintBase;
+    const operating = baseOperating + maintDelta;
+
+    // Depreciation compounds
+    const depAnnual = value * (depRate / 100);
+    const newValue = value * (1 - depRate / 100);
+
+    // Finance annual cost (constant over term — simplification)
+    const finCost = financeEnabled ? annualFinanceCost : 0;
+
+    const totalAnnual = operating + depAnnual + finCost;
+    cumulative += totalAnnual;
+
+    // Net cost if income enabled
+    const netCost = incomeEnabled ? Math.max(totalAnnual - netAnnualIncome, 0) : null;
+
+    rows.push({
+      year: yr,
+      operating: Math.round(operating),
+      depreciation: Math.round(depAnnual),
+      finance: Math.round(finCost),
+      total: Math.round(totalAnnual),
+      value: Math.round(newValue),
+      cumulative: Math.round(cumulative),
+      netCost: netCost !== null ? Math.round(netCost) : null
+    });
+
+    value = newValue;
+  }
+  return rows;
 }
 
 // ========================================
@@ -2097,10 +3069,88 @@ function calculate() {
   els.tableTotal.textContent = formatGBP(totalAnnual);
 
   // Income calculation
-  calculateIncome(totalAnnual);
+  const incomeResult = calculateIncome(totalAnnual);
+
+  // Feature 1 & 2: Purchase, Depreciation, Finance
+  const purchasePrice = parseFloat(els.purchasePriceInput.value) || 85000;
+  const depRate = parseFloat(els.depRateSlider.value) || 0;
+  const annualDep = purchasePrice * (depRate / 100);
+  const valueY1 = purchasePrice * Math.pow(1 - depRate / 100, 1);
+  const valueY5 = purchasePrice * Math.pow(1 - depRate / 100, 5);
+
+  // Update dep summary
+  els.purchasePriceDisplay.textContent = formatGBP(purchasePrice);
+  els.depRateValue.textContent = depRate.toFixed(1) + '%';
+  els.annualDepAmount.textContent = formatGBP(annualDep);
+  els.valueAfterYear1.textContent = formatGBP(valueY1);
+  els.valueAfterYear5.textContent = formatGBP(valueY5);
+
+  // Finance
+  const financeEnabled = els.financeToggle.checked;
+  let finResult = null;
+  let annualFinanceCost = 0;
+
+  if (financeEnabled) {
+    const depositPct = parseFloat(els.depositSlider.value);
+    const termMonths = parseFloat(els.termSlider.value);
+    const apr = parseFloat(els.aprSlider.value);
+    const balloonPct = parseFloat(els.balloonSlider.value);
+
+    finResult = calcFinance(purchasePrice, depositPct, termMonths, apr, balloonPct);
+    annualFinanceCost = finResult.annualFinanceCost;
+
+    els.depositValue.textContent = depositPct + '% · ' + formatGBP(finResult.deposit);
+    els.termValue.textContent = termMonths + ' months';
+    els.aprValue.textContent = apr.toFixed(1) + '%';
+    els.balloonValue.textContent = balloonPct + '%';
+    els.monthlyPayment.textContent = formatGBP(finResult.monthlyPmt);
+    els.totalInterest.textContent = formatGBP(finResult.totalInterest);
+    els.totalPayable.textContent = formatGBP(finResult.totalPaid);
+    els.balloonAmount.textContent = formatGBP(finResult.balloonAbs);
+    els.balloonStatDisplay.style.display = balloonPct > 0 ? '' : 'none';
+
+    // Show finance column in true cost banner
+    els.trueCostFinanceCol.style.display = '';
+    els.trueCostFinance.textContent = formatGBP(annualFinanceCost);
+    els.projFinanceHeader.style.display = '';
+  } else {
+    els.trueCostFinanceCol.style.display = 'none';
+    els.projFinanceHeader.style.display = 'none';
+  }
+
+  // True Annual Cost KPI
+  const trueTotal = totalAnnual + annualDep + annualFinanceCost;
+  const truePerHour = hours > 0 ? trueTotal / hours : 0;
+  els.trueCostOperating.textContent = formatGBP(totalAnnual);
+  els.trueCostDep.textContent = formatGBP(annualDep);
+  els.trueCostTotal.textContent = formatGBP(trueTotal);
+  els.trueCostPerHour.textContent = formatGBP(truePerHour) + ' / hr all-in';
+
+  // Shared Ownership (Feature 3)
+  calculateShared(trueTotal, hours);
+
+  // 5-Year Projection (Feature 4)
+  const netAnnualIncome = incomeResult ? incomeResult.netAnnualIncome : 0;
+  const projRows = calcProjection(
+    totalAnnual,
+    purchasePrice,
+    depRate,
+    financeEnabled,
+    annualFinanceCost,
+    maint,
+    els.incomeToggle.checked,
+    netAnnualIncome
+  );
+  renderProjectionTable(projRows, financeEnabled);
+  updateProjectionChart(projRows);
 
   // Charts
   updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingAnnual);
+
+  // Update comparison if in compare view
+  if (currentView === 'compare') {
+    updateComparison();
+  }
 }
 
 function updateToggleState(toggleId, inputId) {
@@ -2117,7 +3167,179 @@ function updateToggleState(toggleId, inputId) {
 }
 
 // ========================================
-// Charts
+// Feature 3: Shared Ownership
+// ========================================
+function calculateShared(trueTotal, hours) {
+  const isActive = els.sharedToggle.checked;
+  els.sharedBody.classList.toggle('active', isActive);
+
+  if (!isActive) return;
+
+  const owners = parseInt(els.ownersSlider.value) || 2;
+  els.ownersValue.textContent = owners;
+
+  const shareAnnual = trueTotal / owners;
+  const shareMonthly = shareAnnual / 12;
+  const shareHours = hours / owners;
+  const shareCPH = shareHours > 0 ? shareAnnual / shareHours : 0;
+
+  els.shareAnnual.textContent = formatGBP(shareAnnual);
+  els.shareMonthly.textContent = formatGBP(shareMonthly);
+  els.shareCostPerHour.textContent = formatGBP(shareCPH);
+  els.shareHours.textContent = Math.round(shareHours) + ' hrs';
+
+  updateSliderFill(els.ownersSlider);
+}
+
+// ========================================
+// Feature 4: 5-Year Projection Table & Chart
+// ========================================
+function renderProjectionTable(rows, financeEnabled) {
+  const finCol = els.projFinanceHeader;
+  finCol.style.display = financeEnabled ? '' : 'none';
+
+  els.projectionTableBody.innerHTML = rows.map(row => `
+    <tr>
+      <td>Year ${row.year}</td>
+      <td>${formatGBP(row.operating)}</td>
+      <td>${formatGBP(row.depreciation)}</td>
+      ${financeEnabled ? `<td>${formatGBP(row.finance)}</td>` : ''}
+      <td class="proj-total">${formatGBP(row.total)}</td>
+      <td class="proj-value">${formatGBP(row.value)}</td>
+      <td class="proj-cumulative">${formatGBP(row.cumulative)}</td>
+    </tr>
+  `).join('');
+}
+
+function updateProjectionChart(rows) {
+  const cc = getChartColors();
+  const ctx = document.getElementById('projectionChart').getContext('2d');
+  if (projectionChart) projectionChart.destroy();
+
+  const labels = rows.map(r => 'Year ' + r.year);
+  const totalData = rows.map(r => r.total);
+  const valueData = rows.map(r => r.value);
+  const netData = rows.map(r => r.netCost);
+  const hasNet = rows[0].netCost !== null;
+
+  const datasets = [
+    {
+      label: 'Total Annual Cost',
+      data: totalData,
+      borderColor: cc.c2,
+      backgroundColor: cc.c2 + '20',
+      fill: false,
+      tension: 0.3,
+      borderWidth: 2.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'y',
+    },
+    {
+      label: 'Aircraft Value',
+      data: valueData,
+      borderColor: cc.c7,
+      backgroundColor: cc.c7 + '20',
+      fill: false,
+      tension: 0.3,
+      borderWidth: 2.5,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'y2',
+    }
+  ];
+
+  if (hasNet) {
+    datasets.push({
+      label: 'Net Cost (after income)',
+      data: netData,
+      borderColor: cc.c6,
+      backgroundColor: cc.c6 + '20',
+      fill: false,
+      tension: 0.3,
+      borderWidth: 2,
+      borderDash: [6, 3],
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      yAxisID: 'y',
+    });
+  }
+
+  projectionChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          ticks: { color: cc.faint, font: { family: "'General Sans', sans-serif", size: 11 } },
+          grid: { color: cc.border + '40' },
+          border: { color: cc.border },
+        },
+        y: {
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Annual Cost (£)',
+            color: cc.muted,
+            font: { family: "'General Sans', sans-serif", size: 11, weight: '600' }
+          },
+          ticks: {
+            color: cc.faint,
+            font: { family: "'General Sans', sans-serif", size: 11 },
+            callback: v => '£' + Math.round(v / 1000) + 'k',
+          },
+          grid: { color: cc.border + '40' },
+          border: { color: cc.border },
+        },
+        y2: {
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Aircraft Value (£)',
+            color: cc.c7,
+            font: { family: "'General Sans', sans-serif", size: 11, weight: '600' }
+          },
+          ticks: {
+            color: cc.faint,
+            font: { family: "'General Sans', sans-serif", size: 11 },
+            callback: v => '£' + Math.round(v / 1000) + 'k',
+          },
+          grid: { display: false },
+          border: { color: cc.c7 },
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: cc.text,
+            font: { family: "'General Sans', sans-serif", size: 12, weight: '500' },
+            usePointStyle: true,
+            padding: 16,
+          }
+        },
+        tooltip: {
+          backgroundColor: cc.surface,
+          titleColor: cc.text,
+          bodyColor: cc.muted,
+          borderColor: cc.border,
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { family: "'General Sans', sans-serif", weight: '600' },
+          bodyFont: { family: "'General Sans', sans-serif" },
+          callbacks: {
+            label: ctx => ' ' + ctx.dataset.label + ': ' + formatGBP(ctx.parsed.y)
+          }
+        }
+      }
+    }
+  });
+}
+
+// ========================================
+// Charts (original + updated for theme)
 // ========================================
 function getChartColors() {
   const cs = getComputedStyle(document.documentElement);
@@ -2304,7 +3526,212 @@ function updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar
 }
 
 // ========================================
-// PDF Download
+// Feature 5: Aircraft Comparison
+// ========================================
+function populateCompareSelects() {
+  const addOptions = (sel, defaultIdx) => {
+    aircraftPresets.forEach((a, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = a.name;
+      if (i === defaultIdx) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  };
+  // Don't re-add options if already populated
+  if (els.compareA.options.length === 0) {
+    addOptions(els.compareA, 0); // Cessna 152
+    addOptions(els.compareB, 1); // Cessna 172
+    // compareC already has "None" option
+    aircraftPresets.forEach((a, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = a.name;
+      els.compareC.appendChild(opt);
+    });
+  }
+}
+
+function calcAircraftCosts(preset) {
+  const fuelPrice = parseFloat(els.fuelSlider.value);
+  const hours = 100; // fixed 100 hrs/yr for comparison
+  const fuelBurn = preset.fuelBurn;
+
+  const fuelAnnual = hours * fuelBurn * fuelPrice;
+  const engineAnnual = hours * preset.engineReserve;
+  const landingAnnual = preset.landing * 80; // fixed 80 landings
+  const fixedTotal = preset.insurance + preset.hangar + preset.maintenance + preset.inspection;
+  const variableTotal = fuelAnnual + engineAnnual + landingAnnual;
+  const totalAnnual = fixedTotal + variableTotal;
+  const perHour = totalAnnual / hours;
+  const annualDep = preset.purchasePrice * (preset.depRate / 100);
+  const fiveYearTotal = totalAnnual * 5 +
+    preset.purchasePrice * (1 - Math.pow(1 - preset.depRate / 100, 5)); // 5yr cost inc dep loss
+
+  return {
+    purchasePrice: preset.purchasePrice,
+    annualOperating: Math.round(totalAnnual),
+    perHour: Math.round(perHour),
+    fuelAnnual: Math.round(fuelAnnual),
+    fixedTotal: Math.round(fixedTotal),
+    annualDep: Math.round(annualDep),
+    fiveYearTotal: Math.round(fiveYearTotal)
+  };
+}
+
+function updateComparison() {
+  const cc = getChartColors();
+  const idxA = parseInt(els.compareA.value);
+  const idxB = parseInt(els.compareB.value);
+  const idxC = parseInt(els.compareC.value);
+
+  const selected = [idxA, idxB];
+  if (idxC >= 0) selected.push(idxC);
+
+  const presets = selected.map(i => aircraftPresets[i]);
+  const costs = presets.map(p => calcAircraftCosts(p));
+
+  // Find cheapest CPH
+  const minCPH = Math.min(...costs.map(c => c.perHour));
+
+  // Render comparison table
+  const colColors = [cc.c1, cc.c2, cc.c3];
+  els.compareTableHead.innerHTML = `
+    <tr>
+      <th style="text-align:left;">Metric</th>
+      ${presets.map((p, i) => `
+        <th style="text-align:center;">
+          <div class="compare-aircraft-header">${p.name}</div>
+          <div class="compare-aircraft-type">${p.type}</div>
+        </th>
+      `).join('')}
+    </tr>
+  `;
+
+  const rows = [
+    { label: 'Purchase Price', key: 'purchasePrice' },
+    { label: 'Annual Operating Cost', key: 'annualOperating' },
+    { label: 'Cost Per Hour', key: 'perHour', winner: true },
+    { label: 'Fuel Cost / Year', key: 'fuelAnnual' },
+    { label: 'Fixed Costs / Year', key: 'fixedTotal' },
+    { label: 'Annual Depreciation', key: 'annualDep' },
+    { label: '5-Year Total Cost', key: 'fiveYearTotal' },
+  ];
+
+  els.compareTableBody.innerHTML = rows.map(row => `
+    <tr>
+      <td>${row.label}</td>
+      ${costs.map(c => {
+        const isWinner = row.winner && c.perHour === minCPH;
+        return `<td>${formatGBP(c[row.key])}${isWinner ? '<span class="winner-badge">★ Best</span>' : ''}</td>`;
+      }).join('')}
+    </tr>
+  `).join('');
+
+  // Compare bar chart
+  const ctx = document.getElementById('compareChart').getContext('2d');
+  if (compareChart) compareChart.destroy();
+
+  const barColors = colColors.slice(0, selected.length);
+
+  compareChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Fuel', 'Insurance', 'Hangar', 'Maintenance', 'Inspection', 'Engine Res.', 'Landing'],
+      datasets: presets.map((p, i) => ({
+        label: p.name,
+        data: (() => {
+          const fuelPrice = parseFloat(els.fuelSlider.value);
+          return [
+            Math.round(100 * p.fuelBurn * fuelPrice),
+            p.insurance,
+            p.hangar,
+            p.maintenance,
+            p.inspection,
+            Math.round(100 * p.engineReserve),
+            Math.round(p.landing * 80)
+          ];
+        })(),
+        backgroundColor: barColors[i] + 'cc',
+        borderColor: barColors[i],
+        borderWidth: 1.5,
+        borderRadius: 4,
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: cc.text,
+            font: { family: "'General Sans', sans-serif", size: 12, weight: '500' },
+            usePointStyle: true,
+            padding: 16,
+          }
+        },
+        tooltip: {
+          backgroundColor: cc.surface,
+          titleColor: cc.text,
+          bodyColor: cc.muted,
+          borderColor: cc.border,
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { family: "'General Sans', sans-serif", weight: '600' },
+          bodyFont: { family: "'General Sans', sans-serif" },
+          callbacks: {
+            label: ctx => ' ' + ctx.dataset.label + ': ' + formatGBP(ctx.parsed.y)
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: cc.faint, font: { family: "'General Sans', sans-serif", size: 11 } },
+          grid: { display: false },
+          border: { color: cc.border },
+        },
+        y: {
+          ticks: {
+            color: cc.faint,
+            font: { family: "'General Sans', sans-serif", size: 11 },
+            callback: v => '£' + Math.round(v / 1000) + 'k',
+          },
+          grid: { color: cc.border + '40' },
+          border: { color: cc.border },
+        }
+      }
+    }
+  });
+}
+
+// ========================================
+// Feature 5: Tab switching
+// ========================================
+function setView(view) {
+  currentView = view;
+  if (view === 'analysis') {
+    els.analysisView.style.display = '';
+    els.compareView.style.display = 'none';
+    els.tabAnalysis.classList.add('active');
+    els.tabCompare.classList.remove('active');
+  } else {
+    els.analysisView.style.display = 'none';
+    els.compareView.style.display = '';
+    els.tabAnalysis.classList.remove('active');
+    els.tabCompare.classList.add('active');
+    populateCompareSelects();
+    updateComparison();
+  }
+}
+
+els.tabAnalysis.addEventListener('click', () => setView('analysis'));
+els.tabCompare.addEventListener('click', () => setView('compare'));
+els.compareA.addEventListener('change', updateComparison);
+els.compareB.addEventListener('change', updateComparison);
+els.compareC.addEventListener('change', updateComparison);
+
+// ========================================
+// PDF Download (extended with 5-yr projection)
 // ========================================
 els.downloadBtn.addEventListener('click', async () => {
   const btn = els.downloadBtn;
@@ -2352,7 +3779,12 @@ els.downloadBtn.addEventListener('click', async () => {
       ['Annual Fuel Cost', fuelText],
       ['Annual Fixed Costs', fixedText],
       ['Monthly Cost', els.totalMonthly.textContent.replace(' / month', '')],
+      ['True Annual Cost (inc. dep.)', els.trueCostTotal.textContent],
     ];
+
+    if (els.financeToggle.checked) {
+      kpis.push(['Monthly Finance Payment', els.monthlyPayment.textContent]);
+    }
 
     pdf.setFontSize(10);
     kpis.forEach(([label, val]) => {
@@ -2361,7 +3793,7 @@ els.downloadBtn.addEventListener('click', async () => {
       pdf.text(label, margin, y);
       pdf.setFont(undefined, 'bold');
       pdf.setTextColor(30, 58, 95);
-      pdf.text(val, margin + 55, y);
+      pdf.text(val, margin + 70, y);
       y += 6;
     });
 
@@ -2379,6 +3811,8 @@ els.downloadBtn.addEventListener('click', async () => {
       ['Annual Hours', hours + ' hrs'],
       ['Fuel Price', '£' + parseFloat(els.fuelSlider.value).toFixed(2) + '/litre'],
       ['Fuel Burn', parseFloat(els.burnSlider.value) + ' lph'],
+      ['Purchase Price', formatGBP(parseFloat(els.purchasePriceInput.value))],
+      ['Depreciation Rate', parseFloat(els.depRateSlider.value).toFixed(1) + '% / year'],
     ];
 
     pdf.setFontSize(10);
@@ -2440,9 +3874,79 @@ els.downloadBtn.addEventListener('click', async () => {
 
     y += 12;
 
+    // ===== 5-Year Projection in PDF =====
+    if (y + 10 > 280) { pdf.addPage(); y = margin; }
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(30, 58, 95);
+    pdf.text('5-Year Ownership Projection', margin, y);
+    y += 8;
+
+    const purchasePrice = parseFloat(els.purchasePriceInput.value) || 85000;
+    const depRate = parseFloat(els.depRateSlider.value) || 0;
+    const financeEnabled = els.financeToggle.checked;
+    let annualFinCost = 0;
+    if (financeEnabled) {
+      const mp = parseFloat(els.monthlyPayment.textContent.replace(/[^0-9.]/g, '')) || 0;
+      annualFinCost = mp * 12;
+    }
+    const totalAnnual = parseFloat(els.totalCost.textContent.replace(/[^0-9]/g, '')) || 0;
+    const maint = parseFloat(els.maintInput.value) || 0;
+    const projRows = calcProjection(totalAnnual, purchasePrice, depRate, financeEnabled, annualFinCost, maint, false, 0);
+
+    // Table header
+    pdf.setFillColor(244, 245, 247);
+    pdf.rect(margin, y - 4, contentW, 8, 'F');
+    pdf.setFontSize(8);
+    pdf.setFont(undefined, 'bold');
+    pdf.setTextColor(107, 114, 128);
+    const colW = contentW / 6;
+    pdf.text('YEAR', margin + 2, y);
+    pdf.text('OPERATING', margin + colW * 1 + 2, y);
+    pdf.text('DEPRECIATION', margin + colW * 2 + 2, y);
+    pdf.text('TOTAL', margin + colW * 3 + 2, y);
+    pdf.text('AIRCRAFT VALUE', margin + colW * 4 + 2, y);
+    pdf.text('CUMULATIVE', margin + colW * 5 + 2, y);
+    y += 8;
+
+    pdf.setFont(undefined, 'normal');
+    pdf.setFontSize(9);
+    projRows.forEach(row => {
+      if (y > 270) { pdf.addPage(); y = margin; }
+      pdf.setTextColor(30, 58, 95);
+      pdf.text('Year ' + row.year, margin + 2, y);
+      pdf.setTextColor(26, 31, 46);
+      pdf.text(formatGBP(row.operating), margin + colW * 1 + 2, y);
+      pdf.text(formatGBP(row.depreciation), margin + colW * 2 + 2, y);
+      pdf.setFont(undefined, 'bold');
+      pdf.text(formatGBP(row.total), margin + colW * 3 + 2, y);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(22, 163, 74);
+      pdf.text(formatGBP(row.value), margin + colW * 4 + 2, y);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(formatGBP(row.cumulative), margin + colW * 5 + 2, y);
+      y += 7;
+    });
+
+    y += 8;
+
     // Charts as images
     const breakdownCanvas = document.getElementById('breakdownChart');
     const hoursCanvas = document.getElementById('hoursChart');
+    const projCanvas = document.getElementById('projectionChart');
+
+    if (projCanvas) {
+      const imgData = projCanvas.toDataURL('image/png', 1.0);
+      const imgH = 60;
+      if (y + imgH > 280) { pdf.addPage(); y = margin; }
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.setTextColor(30, 58, 95);
+      pdf.text('5-Year Projection Chart', margin, y);
+      y += 4;
+      pdf.addImage(imgData, 'PNG', margin, y, contentW, imgH);
+      y += imgH + 8;
+    }
 
     if (breakdownCanvas) {
       const imgData = breakdownCanvas.toDataURL('image/png', 1.0);
@@ -2598,7 +4102,7 @@ function calculateIncome(totalAnnual) {
   els.incomeBody.classList.toggle('active', isActive);
   els.netCostBanner.style.display = isActive ? '' : 'none';
 
-  if (!isActive) return;
+  if (!isActive) return null;
 
   const grossMonthly = rentalRate * rentalHoursPerMonth;
   const grossAnnual = grossMonthly * 12;
@@ -2628,6 +4132,8 @@ function calculateIncome(totalAnnual) {
   // Update income slider fills
   updateSliderFillIncome(els.rentalRateSlider);
   updateSliderFillIncome(els.rentalHoursSlider);
+
+  return { netAnnualIncome, recovery, netCost };
 }
 
 function updateSliderFillIncome(slider) {
@@ -2651,7 +4157,9 @@ function updateSliderFill(slider) {
 }
 
 function updateAllSliders() {
-  [els.hoursSlider, els.fuelSlider, els.burnSlider, els.landingsPerYearSlider].forEach(updateSliderFill);
+  [els.hoursSlider, els.fuelSlider, els.burnSlider, els.landingsPerYearSlider,
+   els.depRateSlider, els.depositSlider, els.termSlider, els.aprSlider, els.balloonSlider,
+   els.ownersSlider].forEach(s => { if (s) updateSliderFill(s); });
 }
 
 // Sliders
@@ -2687,6 +4195,36 @@ els.dryHireBtn.addEventListener('click', () => {
   els.dryHireBtn.classList.add('active');
   els.wetHireBtn.classList.remove('active');
   calculate();
+});
+
+// Feature 1: Purchase price & depreciation
+els.purchasePriceInput.addEventListener('input', () => {
+  calculate();
+});
+els.depRateSlider.addEventListener('input', () => {
+  calculate();
+  updateSliderFill(els.depRateSlider);
+});
+
+// Feature 2: Finance controls
+els.financeToggle.addEventListener('change', () => {
+  els.financeBody.classList.toggle('active', els.financeToggle.checked);
+  calculate();
+});
+[els.depositSlider, els.termSlider, els.aprSlider, els.balloonSlider].forEach(slider => {
+  slider.addEventListener('input', () => {
+    calculate();
+    updateSliderFill(slider);
+  });
+});
+
+// Feature 3: Shared ownership
+els.sharedToggle.addEventListener('change', () => {
+  calculate();
+});
+els.ownersSlider.addEventListener('input', () => {
+  calculate();
+  updateSliderFill(els.ownersSlider);
 });
 
 // ========================================
