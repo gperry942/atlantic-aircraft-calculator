@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UK Aircraft Ownership Cost Calculator</title>
+  <title>Atlantic Aircraft — UK Ownership Cost Calculator</title>
   <meta name="description" content="Interactive UK aircraft ownership cost calculator — estimate annual costs, cost per hour, and compare aircraft types.">
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
   <style>
@@ -561,6 +561,18 @@ a, button, input, select {
   transform: translateX(20px);
 }
 
+/* === Landing fees expanded row === */
+.toggle-row-landing {
+  flex-wrap: wrap;
+}
+
+.landing-slider-row {
+  width: 100%;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+  margin-top: var(--space-2);
+}
+
 /* === Income Section === */
 .income-section {
   margin-top: var(--space-2);
@@ -934,8 +946,8 @@ a, button, input, select {
           <path d="M14 24 L22 24" stroke="currentColor" stroke-width="1.5"/>
         </svg>
         <div>
-          <h1 class="logo-title">Aircraft Ownership Costs</h1>
-          <p class="logo-subtitle">UK Cost Calculator</p>
+          <h1 class="logo-title">Atlantic Aircraft</h1>
+          <p class="logo-subtitle">UK Ownership Cost Calculator</p>
         </div>
       </div>
       <div class="header-actions">
@@ -1067,17 +1079,25 @@ a, button, input, select {
             </div>
           </div>
 
-          <div class="toggle-row">
+          <div class="toggle-row toggle-row-landing">
             <div class="toggle-info">
               <span class="toggle-label">Landing &amp; Nav Fees</span>
-              <span class="toggle-detail" id="landingDetail">£15 / hour</span>
+              <span class="toggle-detail" id="landingDetail">£15 per landing · 80 landings/yr</span>
             </div>
             <div class="toggle-right">
-              <input type="number" class="inline-input" id="landingInput" value="15" min="0" step="1">
+              <input type="number" class="inline-input" id="landingInput" value="15" min="0" step="1" title="Cost per landing (£)">
               <label class="switch">
                 <input type="checkbox" id="landingToggle" checked>
                 <span class="switch-slider"></span>
               </label>
+            </div>
+            <div class="landing-slider-row" id="landingSliderRow">
+              <div class="control-header">
+                <label for="landingsPerYearSlider">Landings per Year</label>
+                <span class="control-value" id="landingsPerYearValue">80</span>
+              </div>
+              <input type="range" id="landingsPerYearSlider" min="10" max="500" step="5" value="80" class="slider">
+              <div class="slider-labels"><span>10</span><span>500</span></div>
             </div>
           </div>
         </div>
@@ -1221,7 +1241,7 @@ a, button, input, select {
   </main>
 
   <footer class="footer">
-    <p>UK Aircraft Ownership Cost Calculator &mdash; For indicative purposes only</p>
+    <p>Atlantic Aircraft &mdash; UK Ownership Cost Calculator &mdash; For indicative purposes only</p>
   </footer>
 
   <script>
@@ -1813,6 +1833,9 @@ const els = {
   landingInput: document.getElementById('landingInput'),
   landingToggle: document.getElementById('landingToggle'),
   landingDetail: document.getElementById('landingDetail'),
+  landingsPerYearSlider: document.getElementById('landingsPerYearSlider'),
+  landingsPerYearValue: document.getElementById('landingsPerYearValue'),
+  landingSliderRow: document.getElementById('landingSliderRow'),
   totalCost: document.getElementById('totalCost'),
   totalMonthly: document.getElementById('totalMonthly'),
   costPerHour: document.getElementById('costPerHour'),
@@ -1944,11 +1967,12 @@ function calculate() {
   const maint = els.maintToggle.checked ? parseFloat(els.maintInput.value) || 0 : 0;
   const engineRate = els.engineToggle.checked ? parseFloat(els.engineInput.value) || 0 : 0;
   const inspection = els.inspectionToggle.checked ? parseFloat(els.inspectionInput.value) || 0 : 0;
-  const landingRate = els.landingToggle.checked ? parseFloat(els.landingInput.value) || 0 : 0;
+  const landingCostPer = els.landingToggle.checked ? parseFloat(els.landingInput.value) || 0 : 0;
+  const landingsPerYear = parseFloat(els.landingsPerYearSlider.value);
 
   const fuelAnnual = hours * fuelBurn * fuelPrice;
   const engineAnnual = hours * engineRate;
-  const landingAnnual = hours * landingRate;
+  const landingAnnual = landingCostPer * landingsPerYear;
   const fixedTotal = insurance + hangar + maint + inspection;
   const variableTotal = fuelAnnual + engineAnnual + landingAnnual;
   const totalAnnual = fixedTotal + variableTotal;
@@ -1965,7 +1989,8 @@ function calculate() {
   els.maintDetail.textContent = formatGBP(parseFloat(els.maintInput.value)) + ' / year';
   els.engineDetail.textContent = '£' + (parseFloat(els.engineInput.value) || 0) + ' / hour';
   els.inspectionDetail.textContent = formatGBP(parseFloat(els.inspectionInput.value)) + ' / year';
-  els.landingDetail.textContent = '£' + (parseFloat(els.landingInput.value) || 0) + ' / hour';
+  els.landingDetail.textContent = '£' + (parseFloat(els.landingInput.value) || 0) + ' per landing · ' + Math.round(landingsPerYear) + ' landings/yr';
+  els.landingsPerYearValue.textContent = Math.round(landingsPerYear);
 
   // Update toggle row disabled states
   updateToggleState('insuranceToggle', 'insuranceInput');
@@ -2009,7 +2034,7 @@ function calculate() {
   calculateIncome(totalAnnual);
 
   // Charts
-  updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingRate);
+  updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingAnnual);
 }
 
 function updateToggleState(toggleId, inputId) {
@@ -2046,7 +2071,7 @@ function getChartColors() {
   };
 }
 
-function updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingRate) {
+function updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar, maint, engineRate, inspection, landingAnnualFixed) {
   // Re-read if called without args (theme change)
   if (!items) {
     calculate();
@@ -2116,9 +2141,8 @@ function updateCharts(items, totalAnnual, fuelPrice, fuelBurn, insurance, hangar
   for (let h = 25; h <= 500; h += 25) {
     const fuel = h * fuelBurn * fuelPrice;
     const eng = h * engineRate;
-    const land = h * landingRate;
     const fixed = insurance + hangar + maint + inspection;
-    const total = fuel + eng + land + fixed;
+    const total = fuel + eng + landingAnnualFixed + fixed;
     hourPoints.push({ x: h, y: Math.round(total / h) });
   }
 
@@ -2236,7 +2260,7 @@ els.downloadBtn.addEventListener('click', async () => {
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(18);
     pdf.setFont(undefined, 'bold');
-    pdf.text('UK Aircraft Ownership Cost Report', margin, 18);
+    pdf.text('Atlantic Aircraft — Ownership Cost Report', margin, 18);
     pdf.setFontSize(10);
     pdf.setFont(undefined, 'normal');
     const aircraft = aircraftPresets[selectedAircraft];
@@ -2380,6 +2404,72 @@ els.downloadBtn.addEventListener('click', async () => {
       y += imgH + 8;
     }
 
+    // Winglets income section in PDF
+    if (els.incomeToggle.checked) {
+      const rentalRate = parseFloat(els.rentalRateSlider.value);
+      const rentalHoursMonth = parseFloat(els.rentalHoursSlider.value);
+      const monthlyInc = rentalRate * rentalHoursMonth;
+      const annualInc = monthlyInc * 12;
+      const grossCost = parseFloat(els.totalCost.textContent.replace(/[^0-9]/g, ''));
+      const netCost = Math.max(grossCost - annualInc, 0);
+      const recovery = grossCost > 0 ? Math.min((annualInc / grossCost) * 100, 999) : 0;
+
+      if (y + 50 > 280) { pdf.addPage(); y = margin; }
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'bold');
+      pdf.setTextColor(22, 163, 74);
+      pdf.text('Winglets — Rental Income Offset', margin, y);
+      y += 8;
+
+      pdf.setFontSize(10);
+      const incomeItems = [
+        ['Rental Rate (wet)', formatGBP(rentalRate) + ' / hr'],
+        ['Rental Hours / Month', rentalHoursMonth + ' hrs'],
+        ['Monthly Income', formatGBP(monthlyInc)],
+        ['Annual Income', formatGBP(annualInc)],
+        ['Cost Recovery', Math.round(recovery) + '%'],
+      ];
+      incomeItems.forEach(([label, val]) => {
+        pdf.setFont(undefined, 'normal');
+        pdf.setTextColor(107, 114, 128);
+        pdf.text(label, margin, y);
+        pdf.setFont(undefined, 'bold');
+        pdf.setTextColor(22, 163, 74);
+        pdf.text(val, margin + 55, y);
+        y += 6;
+      });
+
+      y += 4;
+      pdf.setDrawColor(22, 163, 74);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, y - 2, margin + contentW, y - 2);
+      y += 4;
+
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'bold');
+      pdf.setTextColor(30, 58, 95);
+      pdf.text('Gross Annual Cost', margin, y);
+      pdf.text(formatGBP(grossCost), margin + 70, y);
+      y += 6;
+      pdf.setTextColor(22, 163, 74);
+      pdf.text('Rental Income', margin, y);
+      pdf.text('- ' + formatGBP(annualInc), margin + 70, y);
+      y += 6;
+      pdf.setDrawColor(30, 58, 95);
+      pdf.line(margin, y - 2, margin + 120, y - 2);
+      y += 4;
+      pdf.setTextColor(30, 58, 95);
+      pdf.setFontSize(12);
+      pdf.text('Net Annual Cost', margin, y);
+      pdf.text(formatGBP(netCost), margin + 70, y);
+      y += 6;
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(107, 114, 128);
+      pdf.text('(' + formatGBP(Math.round(netCost / 12)) + ' / month)', margin + 70, y);
+      y += 10;
+    }
+
     // Disclaimer
     if (y > 260) { pdf.addPage(); y = margin; }
     pdf.setFontSize(8);
@@ -2463,7 +2553,7 @@ function updateSliderFill(slider) {
 }
 
 function updateAllSliders() {
-  [els.hoursSlider, els.fuelSlider, els.burnSlider].forEach(updateSliderFill);
+  [els.hoursSlider, els.fuelSlider, els.burnSlider, els.landingsPerYearSlider].forEach(updateSliderFill);
 }
 
 // Sliders
@@ -2478,6 +2568,9 @@ function updateAllSliders() {
   toggle.addEventListener('change', calculate);
   input.addEventListener('input', calculate);
 });
+
+// Landing slider
+els.landingsPerYearSlider.addEventListener('input', () => { calculate(); updateSliderFill(els.landingsPerYearSlider); });
 
 // Income controls
 els.incomeToggle.addEventListener('change', calculate);
