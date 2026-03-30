@@ -617,9 +617,54 @@ a, button, input, select {
   background: var(--color-success);
 }
 
+/* Wet/Dry hire toggle */
+.hire-type-toggle {
+  display: flex;
+  gap: 0;
+  background: var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+}
+
+.hire-type-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius-md) - 2px);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  transition: all var(--transition);
+  border: none;
+  background: transparent;
+}
+
+.hire-type-btn.active {
+  background: var(--color-success);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.hire-type-btn:not(.active):hover {
+  color: var(--color-text);
+}
+
+.hire-type-note {
+  font-size: var(--text-xs);
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-4);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.income-stat-deduct {
+  color: var(--color-warning) !important;
+}
+
 .income-summary {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: var(--space-2);
   margin-top: var(--space-4);
   padding-top: var(--space-4);
@@ -1115,9 +1160,17 @@ a, button, input, select {
           </div>
           <div class="income-body" id="incomeBody">
             <p class="income-description">Estimate income from renting your aircraft out to offset ownership costs.</p>
+
+            <!-- Wet / Dry toggle -->
+            <div class="hire-type-toggle">
+              <button class="hire-type-btn active" id="wetHireBtn" data-type="wet">Wet Hire</button>
+              <button class="hire-type-btn" id="dryHireBtn" data-type="dry">Dry Hire</button>
+            </div>
+            <p class="hire-type-note" id="hireTypeNote">Wet hire — fuel included in rate. Your fuel cost is deducted from income.</p>
+
             <div class="control-group">
               <div class="control-header">
-                <label for="rentalRateSlider">Rental Rate (wet)</label>
+                <label for="rentalRateSlider" id="rentalRateLabel">Rental Rate (wet)</label>
                 <span class="control-value" id="rentalRateValue">£180 / hr</span>
               </div>
               <input type="range" id="rentalRateSlider" min="80" max="400" step="5" value="180" class="slider slider-income">
@@ -1133,11 +1186,15 @@ a, button, input, select {
             </div>
             <div class="income-summary">
               <div class="income-stat">
-                <span class="income-stat-label">Monthly Income</span>
+                <span class="income-stat-label">Gross Monthly</span>
                 <span class="income-stat-value" id="monthlyIncome">£0</span>
               </div>
+              <div class="income-stat" id="fuelDeductStat" style="display:none;">
+                <span class="income-stat-label">Fuel Cost</span>
+                <span class="income-stat-value income-stat-deduct" id="fuelDeduct">−£0</span>
+              </div>
               <div class="income-stat">
-                <span class="income-stat-label">Annual Income</span>
+                <span class="income-stat-label">Net Annual</span>
                 <span class="income-stat-value" id="annualIncome">£0</span>
               </div>
               <div class="income-stat income-stat-highlight">
@@ -1863,7 +1920,16 @@ const els = {
   incomeDisplay: document.getElementById('incomeDisplay'),
   netCostDisplay: document.getElementById('netCostDisplay'),
   netMonthlyCost: document.getElementById('netMonthlyCost'),
+  // Hire type
+  wetHireBtn: document.getElementById('wetHireBtn'),
+  dryHireBtn: document.getElementById('dryHireBtn'),
+  hireTypeNote: document.getElementById('hireTypeNote'),
+  rentalRateLabel: document.getElementById('rentalRateLabel'),
+  fuelDeductStat: document.getElementById('fuelDeductStat'),
+  fuelDeduct: document.getElementById('fuelDeduct'),
 };
+
+let hireType = 'wet'; // 'wet' or 'dry'
 
 let breakdownChart = null;
 let hoursChart = null;
@@ -2411,8 +2477,6 @@ els.downloadBtn.addEventListener('click', async () => {
       const monthlyInc = rentalRate * rentalHoursMonth;
       const annualInc = monthlyInc * 12;
       const grossCost = parseFloat(els.totalCost.textContent.replace(/[^0-9]/g, ''));
-      const netCost = Math.max(grossCost - annualInc, 0);
-      const recovery = grossCost > 0 ? Math.min((annualInc / grossCost) * 100, 999) : 0;
 
       if (y + 50 > 280) { pdf.addPage(); y = margin; }
       pdf.setFontSize(12);
@@ -2421,14 +2485,28 @@ els.downloadBtn.addEventListener('click', async () => {
       pdf.text('Winglets — Rental Income Offset', margin, y);
       y += 8;
 
+      const fuelPricePdf = parseFloat(els.fuelSlider.value);
+      const fuelBurnPdf = parseFloat(els.burnSlider.value);
+      let fuelCostRental = 0;
+      if (hireType === 'wet') {
+        fuelCostRental = fuelBurnPdf * fuelPricePdf * rentalHoursMonth * 12;
+      }
+      const netIncomeAnnual = (rentalRate * rentalHoursMonth * 12) - fuelCostRental;
+
       pdf.setFontSize(10);
       const incomeItems = [
-        ['Rental Rate (wet)', formatGBP(rentalRate) + ' / hr'],
+        ['Hire Type', hireType === 'wet' ? 'Wet (fuel included)' : 'Dry (renter pays fuel)'],
+        ['Rental Rate (' + hireType + ')', formatGBP(rentalRate) + ' / hr'],
         ['Rental Hours / Month', rentalHoursMonth + ' hrs'],
-        ['Monthly Income', formatGBP(monthlyInc)],
-        ['Annual Income', formatGBP(annualInc)],
-        ['Cost Recovery', Math.round(recovery) + '%'],
+        ['Gross Monthly Income', formatGBP(rentalRate * rentalHoursMonth)],
       ];
+      if (hireType === 'wet') {
+        incomeItems.push(['Fuel Cost (annual)', '- ' + formatGBP(fuelCostRental)]);
+      }
+      incomeItems.push(
+        ['Net Annual Income', formatGBP(netIncomeAnnual)],
+        ['Cost Recovery', Math.round(grossCost > 0 ? Math.min((netIncomeAnnual / grossCost) * 100, 999) : 0) + '%'],
+      );
       incomeItems.forEach(([label, val]) => {
         pdf.setFont(undefined, 'normal');
         pdf.setTextColor(107, 114, 128);
@@ -2452,21 +2530,22 @@ els.downloadBtn.addEventListener('click', async () => {
       pdf.text(formatGBP(grossCost), margin + 70, y);
       y += 6;
       pdf.setTextColor(22, 163, 74);
-      pdf.text('Rental Income', margin, y);
-      pdf.text('- ' + formatGBP(annualInc), margin + 70, y);
+      pdf.text('Rental Income (net)', margin, y);
+      pdf.text('- ' + formatGBP(netIncomeAnnual), margin + 70, y);
       y += 6;
       pdf.setDrawColor(30, 58, 95);
       pdf.line(margin, y - 2, margin + 120, y - 2);
       y += 4;
       pdf.setTextColor(30, 58, 95);
       pdf.setFontSize(12);
+      const pdfNetCost = Math.max(grossCost - netIncomeAnnual, 0);
       pdf.text('Net Annual Cost', margin, y);
-      pdf.text(formatGBP(netCost), margin + 70, y);
+      pdf.text(formatGBP(pdfNetCost), margin + 70, y);
       y += 6;
       pdf.setFontSize(10);
       pdf.setFont(undefined, 'normal');
       pdf.setTextColor(107, 114, 128);
-      pdf.text('(' + formatGBP(Math.round(netCost / 12)) + ' / month)', margin + 70, y);
+      pdf.text('(' + formatGBP(Math.round(pdfNetCost / 12)) + ' / month)', margin + 70, y);
       y += 10;
     }
 
@@ -2501,10 +2580,19 @@ function calculateIncome(totalAnnual) {
   const isActive = els.incomeToggle.checked;
   const rentalRate = parseFloat(els.rentalRateSlider.value);
   const rentalHoursPerMonth = parseFloat(els.rentalHoursSlider.value);
+  const fuelPrice = parseFloat(els.fuelSlider.value);
+  const fuelBurn = parseFloat(els.burnSlider.value);
 
-  // Update display values
+  // Update hire type UI
+  els.rentalRateLabel.textContent = 'Rental Rate (' + hireType + ')';
   els.rentalRateValue.textContent = formatGBP(rentalRate) + ' / hr';
   els.rentalHoursValue.textContent = rentalHoursPerMonth + ' hrs';
+
+  if (hireType === 'wet') {
+    els.hireTypeNote.textContent = 'Wet hire \u2014 fuel included in rate. Your fuel cost is deducted from income.';
+  } else {
+    els.hireTypeNote.textContent = 'Dry hire \u2014 renter pays for fuel. You keep the full hire rate as income.';
+  }
 
   // Show/hide body
   els.incomeBody.classList.toggle('active', isActive);
@@ -2512,18 +2600,28 @@ function calculateIncome(totalAnnual) {
 
   if (!isActive) return;
 
-  const monthlyInc = rentalRate * rentalHoursPerMonth;
-  const annualInc = monthlyInc * 12;
-  const recovery = totalAnnual > 0 ? Math.min((annualInc / totalAnnual) * 100, 999) : 0;
-  const netCost = Math.max(totalAnnual - annualInc, 0);
+  const grossMonthly = rentalRate * rentalHoursPerMonth;
+  const grossAnnual = grossMonthly * 12;
 
-  els.monthlyIncome.textContent = formatGBP(monthlyInc);
-  els.annualIncome.textContent = formatGBP(annualInc);
+  // Wet hire: deduct fuel cost from income. Dry hire: keep full rate.
+  let fuelCostForRental = 0;
+  if (hireType === 'wet') {
+    fuelCostForRental = fuelBurn * fuelPrice * rentalHoursPerMonth * 12;
+  }
+
+  const netAnnualIncome = grossAnnual - fuelCostForRental;
+  const recovery = totalAnnual > 0 ? Math.min((netAnnualIncome / totalAnnual) * 100, 999) : 0;
+  const netCost = Math.max(totalAnnual - netAnnualIncome, 0);
+
+  els.monthlyIncome.textContent = formatGBP(grossMonthly);
+  els.fuelDeductStat.style.display = hireType === 'wet' ? '' : 'none';
+  els.fuelDeduct.textContent = '\u2212' + formatGBP(fuelCostForRental);
+  els.annualIncome.textContent = formatGBP(netAnnualIncome);
   els.costRecovery.textContent = formatPercent(recovery);
 
   // Net cost banner
   els.grossCostDisplay.textContent = formatGBP(totalAnnual);
-  els.incomeDisplay.textContent = formatGBP(annualInc);
+  els.incomeDisplay.textContent = formatGBP(netAnnualIncome);
   els.netCostDisplay.textContent = formatGBP(netCost);
   els.netMonthlyCost.textContent = formatGBP(netCost / 12) + ' / month';
 
@@ -2576,6 +2674,20 @@ els.landingsPerYearSlider.addEventListener('input', () => { calculate(); updateS
 els.incomeToggle.addEventListener('change', calculate);
 els.rentalRateSlider.addEventListener('input', calculate);
 els.rentalHoursSlider.addEventListener('input', calculate);
+
+// Wet/Dry hire toggle
+els.wetHireBtn.addEventListener('click', () => {
+  hireType = 'wet';
+  els.wetHireBtn.classList.add('active');
+  els.dryHireBtn.classList.remove('active');
+  calculate();
+});
+els.dryHireBtn.addEventListener('click', () => {
+  hireType = 'dry';
+  els.dryHireBtn.classList.add('active');
+  els.wetHireBtn.classList.remove('active');
+  calculate();
+});
 
 // ========================================
 // Init
